@@ -1,0 +1,9 @@
+
+public enum DisplayContext
+{
+	
+	NOT_CONCATENATED,
+	CONCATENATED_ONCE,
+	CONCATENATED_TWICE
+
+}

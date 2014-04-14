@@ -14,9 +14,7 @@ public abstract class Parser
 	{
 		String comp = t.nextToken();
 		while(comp.equals("\n"))
-		{
 			comp = t.nextToken();
-		}
 		return comp;
 	}
 	

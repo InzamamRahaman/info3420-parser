@@ -27,29 +27,18 @@ public class BodyParser extends Parser
 		
 		cmp = t.nextToken();
 		
-		if(!Pattern.matches("(" + RegexPack.POSTF + ")(\\$))" , cmp))
+		if(!Pattern.matches(RegexPack.POSTF, cmp))
 		{
-			if(!Pattern.matches(RegexPack.POSTF + ")", cmp))
-			{
-				throw (new InvalidParseException("Bad expression used in set statemet: " + cmp));
-			}
-			else
-			{
-				cmp = t.nextToken();
-				if(!cmp.equals("$"))
-				{
-					throw (new InvalidParseException("Invalid set statement missing terminating $"));
-				}
-			}
+			throw (new InvalidParseException("Improper use of set statement"));
 		}
 		
 	}
 	
-	private void parseInternalPrint(TokenizeInput st) throws InvalidParseException
+	private void parseInternalPrint(StringTokenizer st) throws InvalidParseException
 	{
 		String cmp = st.nextToken();
 		boolean phraseLeading = true;
-		if(Pattern.matches(RegexPack.POSTF + ")", cmp))
+		if(Pattern.matches(RegexPack.POSTF, cmp))
 			phraseLeading = false;
 		else 
 		{
@@ -59,12 +48,12 @@ public class BodyParser extends Parser
 			}
 		}
 		
-		while(!st.isEmpty())
+		while(!st.hasMoreElements())
 		{
 			cmp = st.nextToken();
 			if(phraseLeading)
 			{
-				if(!Pattern.matches(RegexPack.POSTF + ")", cmp))
+				if(!Pattern.matches(RegexPack.POSTF, cmp))
 				{
 					throw (new InvalidParseException("Incorrectly formed print statement"));
 				}
@@ -83,8 +72,32 @@ public class BodyParser extends Parser
 			
 	}
 	
-	
-	
+	private void parsePrint(boolean connected) throws InvalidParseException
+	{
+		String cmp = t.nextToken();
+		if(!cmp.equals("{") && !connected)
+		{
+			throw (new InvalidParseException("Print statemet missing opening bracket"));
+		}
+		
+		cmp = t.nextToken();
+		
+		StringBuilder sb = new StringBuilder();
+		while(!cmp.equals("}"))
+		{
+			sb.append(cmp);
+			cmp = t.nextToken();
+		}
+		
+		if(sb.length() <= 0)
+		{
+			throw (new InvalidParseException("Print statements cannot be empty"));
+		}
+		
+		StringTokenizer temp = new StringTokenizer(sb.toString(), "-");
+		
+		parseInternalPrint(temp);
+	}
 	
 	private void parseInBracketExpression() throws InvalidParseException
 	{
@@ -287,81 +300,18 @@ public class BodyParser extends Parser
 		}
 	}
 	
-	public TokenizeInput buildDisplayStatement() throws InvalidParseException
-	{
-		String cmp = t.getCurrent();
-		// If the entire display statement is not in a single token
-		if (!cmp.endsWith("}") && !cmp.endsWith("}$"))
-		{
-			//System.out.println("Not a single token");
-			//System.out.println(cmp);
-			StringBuilder sb = new StringBuilder();
-			//if(!cmp.endsWith("}") && !cmp.endsWith("}$"))
-				//System.out.println("Not final");
-			//System.out.println("Entering while loop .... ");
-			while(cmp.endsWith("}") == false && cmp.endsWith("}$") == false)
-			{
-				//System.out.println("In while loop ... ");
-				//System.out.println("Appended " + cmp);
-				sb.append(cmp);
-				cmp = t.nextToken();
-				//System.out.println(cmp);
-			}
-			
-			//System.out.println("Finihsed while loop");
-			String temp = cmp;
-			//System.out.println(cmp);
-			if(!cmp.endsWith("$"))
-			{
-				
-				if(t.isEmpty())
-				{
-					throw (new InvalidParseException("Forgot $ after display statement"));
-				}
-				
-				cmp = t.nextToken();
-				if(!cmp.equals("$"))
-				{
-					throw (new InvalidParseException("Forgot $ after display statement"));
-				}
-			}
-			
-			sb.append(temp);
-			cmp = sb.toString();
-			//System.out.println("Got " + cmp);
-		}
-		
-			
-		
-		String[] strs = cmp.split("\\{|\\}");
-		//System.out.println("Extracted " + strs[1]);
-		TokenizeInput tok = new TokenizeInput(strs[1], "-");
-		return tok;
-		//parseInternalPrint(tok);
-		
-	}
-	
-
-	private void parsePrint() throws InvalidParseException
-	{
-		
-		TokenizeInput tok = buildDisplayStatement();
-		parseInternalPrint(tok);
-	}
-	
 	
 	public void parse() throws InvalidParseException
 	{
-		String cmp = t.nextToken();
+		String cmp = t.getCurrent();
 		
 		if(cmp.equals("set"))
 		{
 			parseSet();
 		}
-		else if(cmp.startsWith("display"))
+		else if(cmp.equals("display"))
 		{
-			//System.out.println("Parsing display statement");
-			parsePrint();
+			parsePrint(true);
 		}
 		else if(cmp.equals("branch"))
 		{

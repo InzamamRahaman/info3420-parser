@@ -5,7 +5,7 @@ public class RegexPack
 	public final static String OP = "(\\+|-|\\*|\\)";
 	public final static String PROGRAMME_NAME = "[a-zA-Z]{1,16}";
 	public final static String NUMBERS = "((\\+|-)?\\d+(\\.\\d+)?)";
-	public final static String VARIABLE_NAME = "([a-z](([a-zA-Z]|[0-9]){0,7}))";
+	public final static String VARIABLE_NAME = "([a-z](([a-zA-Z]|[0-9]){0,7})";
 	public final static String POSTFIX_ELEMENT = 
 			"("+ NUMBERS + "|" + VARIABLE_NAME + ")";
 	public final static String POSTFIX_EXP = 
