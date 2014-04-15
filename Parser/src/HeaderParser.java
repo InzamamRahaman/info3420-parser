@@ -37,11 +37,16 @@ public class HeaderParser extends Parser
 		}
 		
 		
-		curr = t.nextToken();
+		//curr = t.nextToken();
 		// The next token is supposed to be a newline, after which the declaration block is formed
-		if(!curr.equals("\n"))
+		//if(!curr.equals("\n"))
+		//{
+			//throw (new InvalidParseException("Declarations start on the same line as header"));
+		//}
+		
+		if(!t.isEmpty())
 		{
-			throw (new InvalidParseException("Declarations start on the same line as header"));
+			throw (new InvalidParseException("Header information must be alone on the first line" + t.nextToken()));
 		}
 		
 		

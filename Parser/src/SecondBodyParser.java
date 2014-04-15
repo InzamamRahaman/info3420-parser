@@ -34,7 +34,7 @@ public class SecondBodyParser extends Parser
 		boolean correct = parseNumberOrVariable(pushBack);
 		correct = parseNumberOrVariable(pushBack);
 		String temp = t.nextToken();
-		if(!Pattern.matches(RegexPack.OP, temp))
+		if(!Pattern.matches(RegexPack.OP + ")", temp))
 		{
 			throw (new InvalidParseException("Bad postfix expression"));
 		}
@@ -107,7 +107,13 @@ public class SecondBodyParser extends Parser
 		}
 		
 		//cmp = t.nextToken();
-		parseAssignment();
+		//parseAssignment();
+		parseCalculable();
+		cmp = t.nextToken();
+		if(!cmp.equals("$"))
+		{
+			throw (new InvalidParseException("Missing $ at the end of an assignment statement"));
+		}
 		parse();
 		
 		
@@ -120,7 +126,8 @@ public class SecondBodyParser extends Parser
 		
 		if(!Pattern.matches(RegexPack.VARIABLE_NAME, cmp))
 		{
-			throw (new InvalidParseException("Bad variable name in display"));
+			//System.out.println(cmp);
+			throw (new InvalidParseException("Bad variable name in display: " + cmp));
 		}
 		
 		cmp = t.nextToken();
@@ -133,7 +140,16 @@ public class SecondBodyParser extends Parser
 		
 		if(cmp.equals("-"))
 		{
-			parseVariableLeading();
+			cmp = t.nextToken();
+			t.pushTokensBack(cmp);
+			if(cmp.equals("\""))
+			{
+				parsePhraseLeading();
+			}
+			else
+			{
+				parseVariableLeading();
+			}
 			return;
 		}
 		
@@ -144,6 +160,7 @@ public class SecondBodyParser extends Parser
 	private void parsePhraseLeading() throws InvalidParseException
 	{
 		String cmp = t.nextToken();
+		//System.out.println(cmp);
 		if(!cmp.equals("\""))
 		{
 			throw (new InvalidParseException("Missing \" in display statment"));
@@ -183,7 +200,16 @@ public class SecondBodyParser extends Parser
 		}
 		else if(cmp.equals("-"))
 		{
-			parseVariableLeading();
+			cmp = t.nextToken();
+			t.pushTokensBack(cmp);
+			if(cmp.equals("\""))
+			{
+				parsePhraseLeading();
+			}
+			else
+			{
+				parseVariableLeading();
+			}
 			return;
 		}
 		
@@ -212,7 +238,9 @@ public class SecondBodyParser extends Parser
 	
 	private void parseDisplay() throws InvalidParseException
 	{
+		//System.out.println("Checking display");
 		String cmp = t.nextToken();
+		System.out.println(cmp);
 		if(!cmp.equals("{"))
 		{
 			throw (new InvalidParseException("Missing opening { of display statement"));
@@ -233,14 +261,55 @@ public class SecondBodyParser extends Parser
 		parse();
 	}
 	
+	public void parseCalculable() throws InvalidParseException
+	{
+		String cmp = t.nextToken();
+		if(!Pattern.matches(RegexPack.NUMBERS, cmp) && !Pattern.matches(RegexPack.VARIABLE_NAME, cmp))
+		{
+			throw (new InvalidParseException("Bad variable or number in calculable " + cmp));
+		}
+		
+		cmp = t.nextToken();
+		
+		// We are not in a postfix expression
+		if(!Pattern.matches(RegexPack.NUMBERS, cmp) && !Pattern.matches(RegexPack.VARIABLE_NAME, cmp))
+		{
+			System.out.println("Pushed back " + cmp);
+			t.pushTokensBack(cmp);
+			return;
+		}
+		
+		cmp = t.nextToken();
+		if(!Pattern.matches(RegexPack.OP + ")", cmp))
+		{
+			System.out.println("OP : " + cmp);
+			throw (new InvalidParseException("Bad postfix expression with bad operation " + cmp));
+			
+		}
+		
+		cmp = t.nextToken();
+		if(!Pattern.matches(RegexPack.NUMBERS, cmp) && !Pattern.matches(RegexPack.VARIABLE_NAME, cmp))
+		{
+			//System.out.println("Pushed back "+cmp);
+			t.pushTokensBack(cmp);
+			return;
+		}
+		else
+		{
+			//System.out.println("Continueing expression");
+			t.pushTokensBack(cmp);
+			parseCalculable();
+		}
+		
+		
+	}
+	
 	public void parseRelExp() throws InvalidParseException
 	{
 		String cmp = t.nextToken();
 		if(!cmp.equals("("))
 			throw (new InvalidParseException("Missing ( in conditional"));
-		cmp = t.nextToken();
-		if(!Pattern.matches(RegexPack.POSTF + ")", cmp))
-			throw (new InvalidParseException("Bad operand in conditional"));
+		parseCalculable();
 		cmp = t.nextToken();
 		if(!cmp.equals(")"))
 			throw (new InvalidParseException("Missing ) in conditional"));
@@ -249,15 +318,16 @@ public class SecondBodyParser extends Parser
 		{
 			throw (new InvalidParseException("Bad relational operator in conditional"));
 		}
-		
+		cmp = t.nextToken();
 		if(!cmp.equals("("))
 			throw (new InvalidParseException("Bad ( in conditional"));
-		cmp = t.nextToken();
-		if(!Pattern.matches(RegexPack.POSTF + ")", cmp))
-			throw (new InvalidParseException("Bad operand in conditional"));
+		//System.out.println(cmp);
+		parseCalculable();
+		//if(!Pattern.matches(RegexPack.POSTF + ")", cmp))
+			//throw (new InvalidParseException("Bad operand in conditional"));
 		cmp = t.nextToken();
 		if(!cmp.equals(")"))
-			throw (new InvalidParseException("Bad ( in conditional"));
+			throw (new InvalidParseException("Missing ) in conditional"));
 	}
 	
 	public void parseBoolExp() throws InvalidParseException
@@ -266,9 +336,10 @@ public class SecondBodyParser extends Parser
 		if(!cmp.equals("("))
 			throw (new InvalidParseException("Missing bracket in conditional"));
 		cmp = t.nextToken();
+		t.pushTokensBack(cmp);
 		if(cmp.equals("("))
 		{
-			t.pushTokensBack(cmp);
+			//t.pushTokensBack(cmp);
 			parseBoolExp();
 			cmp = t.nextToken();
 			if(!cmp.equals("@") && !cmp.equals("^"))
@@ -277,7 +348,7 @@ public class SecondBodyParser extends Parser
 		}
 		else
 		{
-			t.pushTokensBack(cmp);
+			t.pushTokensBack("(");
 			parseRelExp();
 		}
 	}
@@ -290,8 +361,7 @@ public class SecondBodyParser extends Parser
 		parse();
 		
 		cmp = t.nextToken();
-		
-		if(!cmp.equals("["))
+		if(!cmp.equals("]"))
 			throw (new InvalidParseException("Missing ]"));
 		
 		
@@ -321,13 +391,13 @@ public class SecondBodyParser extends Parser
 		String cmp = t.nextToken();
 		if(!cmp.equals("("))
 		{
-			throw (new InvalidParseException("Missing ) in loop"));
+			throw (new InvalidParseException("Missing ( in branch"));
 		}
 		parseBoolExp();
 		cmp = t.nextToken();
 		if(!cmp.equals(")"))
 		{
-			throw (new InvalidParseException("Missing ) in loop"));
+			throw (new InvalidParseException("Missing ) in branch"));
 		}
 		
 		parseNested();
@@ -344,25 +414,30 @@ public class SecondBodyParser extends Parser
 	{
 		
 		String cmp = t.nextToken();
-		
+		//System.out.println(cmp);
 		if(cmp.equals("set"))
 		{
 			parseSet();
+			System.out.println("Successfully parsed set");
 		}
 		else if(cmp.equals("display"))
 		{
 			parseDisplay();
+			System.out.println("Successfully parsed display");
 		}
 		else if(cmp.equals("loop"))
 		{
 			parseLoop();
+			System.out.println("Successfully parsed loop");
 		}
 		else if(cmp.equals("branch"))
 		{
 			parseBranch();
+			System.out.println("Successfully parsed branch");
 		}
 		else 
 		{
+			System.out.println("Pushed back " + cmp);
 			t.pushTokensBack(cmp);
 			return;
 		}

@@ -29,24 +29,42 @@ public class BodyTokenizer implements MyTokenizers
 	private void tokenizeAccodingToGrammar()
 	{
 		skipWhiteSpace();
+		//System.out.println("Skipped all beginning whitespace");
 		while(idx < arr.length)
 		{
+			
 			if(!tryKeywords())
 			{
+				//System.out.println("Did not find a keyword");
 				readUntilStop();
 			}
 			skipWhiteSpace();
 		}
 		
-		String[] strs = (String[]) tokens.toArray();
-		for(int i = strs.length - 1; i >= 0; i++)
-			toConsider.push(strs[i]);
+//		String[] strs = (String[]) tokens.toArray();
+//		for(int i = strs.length - 1; i >= 0; i++)
+//			toConsider.push(strs[i]);
+		
+		Stack<String> A = new Stack<String>();
+		
+//		for(String S : tokens)
+//			A.push(S);
+//		
+//		for(String S : A)
+//		{
+//			if(!S.isEmpty())
+//			{
+//				System.out.println("Pushed " + S);
+//				toConsider.push(S);
+//			}
+//			
+//		}
 		
 	}
 	
 	private boolean isStopSymbol(char ch)
 	{
-		return RegexPack.STOP_SYMBOLS.contains(String.valueOf(ch));
+		return (RegexPack.STOP_SYMBOLS.contains(String.valueOf(ch)) || ch == '"');
 	}
 	
 	private boolean isWhiteSpace(char ch)
@@ -56,16 +74,24 @@ public class BodyTokenizer implements MyTokenizers
 	
 	private void skipWhiteSpace()
 	{
-		while(isWhiteSpace(arr[idx]))
+		while(idx < input.length() && isWhiteSpace(arr[idx]))
 			idx++;
 	}
 	
 	private boolean tryWord(String str)
 	{
+		//System.out.println("Trying " + str);
 		int curr = idx;
 		char[] temp = str.toCharArray();
-		for(int i = 0; i < (str.length() - curr); i++)
+		for(int i = 0; i < str.length(); i++)
 		{
+			
+			if(idx >= input.length())
+			{
+				idx = curr;
+				return false;
+			}
+			
 			if(temp[i] != arr[idx])
 			{
 				idx = curr;
@@ -85,6 +111,7 @@ public class BodyTokenizer implements MyTokenizers
 		String[] keywords = {"set", "branch", "to", "display", "loop", "endProg"};
 		for (String S : keywords)
 		{
+			//System.out.println("Considering " + S);
 			if(tryWord(S))
 			{
 				tokens.add(S);
@@ -115,7 +142,11 @@ public class BodyTokenizer implements MyTokenizers
 	@Override
 	public String nextToken() 
 	{
-		this.current = toConsider.pop();
+		this.current = tokens.pop();
+		while(this.current.isEmpty())
+			this.current = tokens.pop();
+		//this.current = toConsider.pop();
+		//System.out.println(current);
 		return current;
 		
 	}
@@ -140,7 +171,7 @@ public class BodyTokenizer implements MyTokenizers
 	@Override
 	public void pushTokensBack(String str)
 	{
-		toConsider.push(str);
+		tokens.push(str);
 		
 	}
 	

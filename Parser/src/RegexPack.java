@@ -15,11 +15,12 @@ public class RegexPack
 	public final static String POSTFIX = 
 			"(" + POSTF + "(\\s)+" + POSTF + "(\\s)+" + POSTF + ")";
 	public final static String ANY_STRING = 
-			"(\"" + "(\\w|\\d|\\s)+" + "\")";
+			"(\\w|\\d|\\s)+";
+			//"(\"" + "(\\w|\\d|\\s)+" + "\")";
 	public final static String REL_OP = "(>|<|=)";
 	
 	public final static String STOP_SYMBOLS = 
-			"+-*\\$^@<>={}[]()\"\"";
+			"+-*\\$^@<>={}[]()\"";
 	
 	
 

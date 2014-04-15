@@ -15,12 +15,13 @@ public class Main
 	{
 		try {
 			
-			String input = readFile("C://Users/Administrator/Documents/GitHub/info3420-parser/Parser/src/test1.txt");
+			String input = readFile("C:\\Users\\Inzamam\\Documents\\GitHub\\info3420-parser\\Parser\\src\\test1.txt");
 			//String input = readFile("C://Users/Administrator/Documents/GitHub/info3420-parser/Parser/src/test1.txt",Charset.defaultCharset());
-			MainParser mp = new MainParser(new TokenizeInput(input));
+			//MainParser mp = new MainParser(new TokenizeInput(input));
+			ParseInput p = new ParseInput(input);
 			
 			try {
-				mp.parse();
+				p.parse();
 			} catch (InvalidParseException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
