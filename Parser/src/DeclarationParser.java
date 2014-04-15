@@ -4,7 +4,7 @@ import java.util.regex.Pattern;
 public class DeclarationParser extends Parser
 {
 
-	public DeclarationParser(TokenizeInput t) {
+	public DeclarationParser(MyTokenizers t) {
 		super(t);
 		// TODO Auto-generated constructor stub
 	}
@@ -14,7 +14,7 @@ public class DeclarationParser extends Parser
 		String cmp = t.nextToken();
 		while(!cmp.equals("endDeclar") && !t.isEmpty())
 		{
-			if(!Pattern.matches("([a-z](([a-zA-Z]|[0-9]){0,7})\\$)", cmp))
+			if(!Pattern.matches("([a-z](([a-zA-Z]|[0-9]){0,7})\\$)+", cmp))
 			{
 				//throw (new InvalidParseException("Invalid variable name"));
 				if(!Pattern.matches(RegexPack.VARIABLE_NAME, cmp))

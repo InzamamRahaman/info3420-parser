@@ -2,9 +2,9 @@
 public abstract class Parser
 {
 	
-	protected TokenizeInput t;
+	protected MyTokenizers t;
 	
-	public Parser(TokenizeInput t)
+	public Parser(MyTokenizers t)
 	{
 		this.t = t;
 	}

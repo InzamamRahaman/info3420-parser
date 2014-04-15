@@ -43,6 +43,8 @@ public class BodyParser extends Parser
 			}
 		}
 		
+		parse();
+		
 	}
 	
 	private void parseInternalPrint(TokenizeInput st) throws InvalidParseException
@@ -212,9 +214,21 @@ public class BodyParser extends Parser
 		return sb.toString();
 	}
 	
+	public void parseBoolExpressionInParens()
+	{
+		
+	}
+	
 	public void parseBranch() throws InvalidParseException
 	{
-		String cmp = t.nextToken();
+		String cmp = t.getCurrent();
+		
+		cmp = cmp.substring(3);
+		
+		
+		
+				
+		//S//tring cmp = t.nextToken();
 		if(!cmp.equals("("))
 		{
 			throw (new InvalidParseException("Missing opening parenthesis of branch"));
@@ -347,6 +361,7 @@ public class BodyParser extends Parser
 		
 		TokenizeInput tok = buildDisplayStatement();
 		parseInternalPrint(tok);
+		parse();
 	}
 	
 	
@@ -363,7 +378,7 @@ public class BodyParser extends Parser
 			//System.out.println("Parsing display statement");
 			parsePrint();
 		}
-		else if(cmp.equals("branch"))
+		else if(cmp.startsWith("branch"))
 		{
 			parseBranch();
 		}
@@ -381,6 +396,8 @@ public class BodyParser extends Parser
 			
 			throw (new InvalidParseException("Programme has contents after endProg"));
 		}
+		
+		throw (new InvalidParseException("Unknown statement type used"));
 		
 			
 		

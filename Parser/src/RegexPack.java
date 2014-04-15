@@ -18,6 +18,9 @@ public class RegexPack
 			"(\"" + "(\\w|\\d|\\s)+" + "\")";
 	public final static String REL_OP = "(>|<|=)";
 	
+	public final static String STOP_SYMBOLS = 
+			"+-*\\$^@<>={}[]()\"\"";
+	
 	
 
 }

@@ -6,7 +6,7 @@ public class HeaderParser extends Parser
 
 	//private TokenizeInput t;
 	
-	public HeaderParser(TokenizeInput t)
+	public HeaderParser(MyTokenizers t)
 	{
 		super(t);
 	}

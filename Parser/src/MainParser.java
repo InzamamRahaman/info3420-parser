@@ -6,7 +6,7 @@ public class MainParser extends Parser
 	
 	private HeaderParser hp;
 	private DeclarationParser dp;
-	private BodyParser bp;
+	private SecondBodyParser bp;
 	
 
 	public MainParser(TokenizeInput t) 
@@ -20,14 +20,30 @@ public class MainParser extends Parser
 	public void parse() throws InvalidParseException 
 	{
 		hp.parse();
-		String s = t.toString();
+		String s = t.getRemainingStringSeparatedBySpaces();
 		StringTokenizer st = new StringTokenizer(s, "(\\s)");
-		TokenizeInput t = new TokenizeInput(st);
+		MyTokenizers t = new TokenizeInput(st);
 		dp = new DeclarationParser(t);
-		bp = new BodyParser(t);
+		s = t.getRemainingStringSeparatedBySpaces();
+		t = new BodyTokenizer(s);
+		bp = new SecondBodyParser(t);
 		dp.parse();
 		bp.parse();
+		if(t.isEmpty())
+		{
+			throw (new InvalidParseException("missing endProg"));
+		}
 		
+		s = t.nextToken();
+		
+		if(t.equals("endProg"))
+		{
+			System.out.println("Successfully parsed input !!!");
+		}
+		else
+		{
+			throw (new InvalidParseException("Missing endProg"));
+		}
 	}
 	
 	

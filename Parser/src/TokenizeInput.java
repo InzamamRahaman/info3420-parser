@@ -1,11 +1,13 @@
 import java.util.StringTokenizer;
 
 
-public class TokenizeInput
+public class TokenizeInput implements MyTokenizers
 {
 	
 	private StringTokenizer st;
 	private String current;
+	
+	
 	
 	
 	public TokenizeInput(String input)
@@ -57,6 +59,12 @@ public class TokenizeInput
 	public String getAll()
 	{
 		return st.toString();
+	}
+
+	@Override
+	public void pushTokensBack(String str) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 	
