@@ -1,0 +1,27 @@
+prog: test
+
+startDeclar
+a$
+endDeclar
+
+set a to 34.6$ set height1 to 78$
+
+branch (a>(- height1 20)) 
+[ 
+set a to + a 1$
+display {"value of  fjsif "-a}$ 
+]
+
+else
+[
+display {"value of" - s -  fjsif "-a}$ 
+]
+
+loop (a<height1)
+[
+set a to + a 1$
+]
+
+display {a-"value of  fjsif "-a}$ 
+
+endProg

@@ -28,7 +28,6 @@ public class HeaderParser extends Parser
 			throw (new InvalidParseException("Header was ill-formed"));
 		}
 		curr = t.nextToken();
-		
 		// A valid programme name has a particular form
 		// if the name specified does not match the form
 		// then it is an invalid name
